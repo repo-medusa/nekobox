@@ -121,6 +121,10 @@ clangStdenv.mkDerivation (finalAttrs: {
     })
   ];
 
+  patches = [
+    ./nekogui.patch
+  ];
+
   passthru = {
     nekobox-core = callPackage ./nekobox-core.nix {
       inherit (finalAttrs) src;
