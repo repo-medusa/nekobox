@@ -88,6 +88,21 @@ clangStdenv.mkDerivation (finalAttrs: {
     "-DNKR_PACKAGE=ON"
   ];
 
+  desktopItems = [
+    (makeDesktopItem {
+      name = "Nekobox";
+      desktopName = "Nekobox";
+      exec = "nekobox -appdata %U";
+      icon = "nekobox";
+      comment = finalAttrs.meta.description;
+      terminal = false;
+      categories = [
+        "Network"
+        "Application"
+      ];
+    })
+  ];
+
   installPhase = ''
     runHook preInstall
 
@@ -105,21 +120,6 @@ clangStdenv.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
-
-  desktopItems = [
-    (makeDesktopItem {
-      name = "Nekobox";
-      desktopName = "Nekobox";
-      exec = "nekobox -appdata %U";
-      icon = "nekobox";
-      comment = finalAttrs.meta.description;
-      terminal = false;
-      categories = [
-        "Network"
-        "Application"
-      ];
-    })
-  ];
 
   patches = [
     ./nekogui.patch
