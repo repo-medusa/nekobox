@@ -1,19 +1,18 @@
 {
   lib,
+  callPackage,
   clangStdenv,
-  fetchFromGitHub,
-  libsForQt5,
   cmake,
+  copyDesktopItems,
+  fetchFromGitHub,
+  makeDesktopItem,
   ninja,
+
   protobuf,
+  qt6,
   yaml-cpp,
   zxing-cpp,
-  callPackage,
-  makeDesktopItem,
-  copyDesktopItems,
 
-  v2ray-geoip,
-  v2ray-domain-list-community,
   sing-geoip,
   sing-geosite,
 }:
@@ -29,7 +28,6 @@ let
     );
 
   extraSources = {
-    # revs found in https://github.com/MatsuriDayo/nekoray/blob/<version>/libs/get_source_env.sh
     sing-box = fetchSource {
       name = "sing-box";
       rev = "cf36758f11b7c144e1211801753cc91f06ff2906";
@@ -43,8 +41,6 @@ let
   };
 
   geodata = {
-    "geoip.dat" = "${v2ray-geoip}/share/v2ray/geoip.dat";
-    "geosite.dat" = "${v2ray-domain-list-community}/share/v2ray/geosite.dat";
     "geoip.db" = "${sing-geoip}/share/sing-box/geoip.db";
     "geosite.db" = "${sing-geosite}/share/sing-box/geosite.db";
   };
@@ -69,30 +65,34 @@ clangStdenv.mkDerivation (finalAttrs: {
   strictDeps = true;
 
   nativeBuildInputs = [
-    libsForQt5.wrapQtAppsHook
     cmake
-    ninja
     copyDesktopItems
+    ninja
+
+    qt6.wrapQtAppsHook
   ];
 
   buildInputs = [
-    libsForQt5.qtbase
-    libsForQt5.qttools
-    libsForQt5.qtwayland
-    libsForQt5.qtx11extras
     protobuf
     yaml-cpp
     zxing-cpp
+
+    qt6.qtbase
+    qt6.qtsvg
+    qt6.qttools
+    qt6.qtwayland
   ];
 
-  # NKR_PACKAGE makes sure the app uses the user's config directory to store it's non-static content
-  # it's essentially the same as always setting the -appdata flag when running the program
-  cmakeFlags = [ (lib.cmakeBool "NKR_PACKAGE" true) ];
+  cmakeFlags = [
+    "-DQT_VERSION_MAJOR=6"
+    "-DNKR_PACKAGE=ON"
+  ];
 
   installPhase = ''
     runHook preInstall
 
     install -Dm755 nekobox "$out/share/nekobox/nekobox"
+
     mkdir -p "$out/bin"
     ln -s "$out/share/nekobox/nekobox" "$out/bin"
 
@@ -108,9 +108,9 @@ clangStdenv.mkDerivation (finalAttrs: {
 
   desktopItems = [
     (makeDesktopItem {
-      name = "nekobox";
-      desktopName = "nekobox";
-      exec = "nekobox";
+      name = "Nekobox";
+      desktopName = "Nekobox";
+      exec = "nekobox -appdata %U";
       icon = "nekobox";
       comment = finalAttrs.meta.description;
       terminal = false;
