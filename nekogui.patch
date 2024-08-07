@@ -7,7 +7,7 @@ index 2750b3a..776452b 100644
  
      QString FindNekoBoxCoreRealPath() {
 -        auto fn = QApplication::applicationDirPath() + "/nekobox_core";
-+        auto fn = QApplication::applicationDirPath() + "/run/wrappers/bin/nekobox_core";
++        auto fn = "/run/wrappers/bin/nekobox_core";
          auto fi = QFileInfo(fn);
          if (fi.isSymLink()) return fi.symLinkTarget();
          return fn;
